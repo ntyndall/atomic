@@ -11,16 +11,53 @@ parse_response <- function(content) {
 
   # Get the actual content and get the nodes of content
   tBodyContent <- htmlDoc %>%
-    xml2::xml_find_all(xpath = './/tbody') %>%
-    `[`(2)
+    xml2::xml_find_all(xpath = './/tbody')
+
+  # Get the header names
+  tableHeaders <- tBodyContent %>%
+    `[`(1) %>%
+    xml2::xml_children() %>%
+    xml2::xml_children()
+
+  # Get main header names
+  tableHeaders %<>%
+    xml2::xml_text() %>%
+    strsplit(split = '[(]') %>%
+    purrr::map(1) %>%
+    stringr::str_trim(side = 'both')
+
+  # Get spanning columns
+  spanning <- tableHeaders %>%
+    xml2::xml_attrs() %>%
+    purrr::map('colspan') %>%
+    purrr::map(function(x) if (x %>% is.null) 1 else x %>% as.integer) %>%
+    as.integer
+
+  # Create data frame headers
+  dHeaders <- c(
+    'Index',
+    sapply(
+      X = 1:(spanning %>% length),
+      FUN = function(x) {
+        if (spanning[x] == 1) tableHeaders[x] else tableHeaders[x] %>% paste0('-', 1:spanning[x])
+      }
+    ) %>%
+      purrr::flatten_chr()
+  )
+
+  # Get the actual row data
+  tableContent <- tBodyContent %>% `[`(2)
 
   # Define all the rows as children nodes from the body
-  allRows <- tBodyContent %>%
+  allRows <- tableContent %>%
     xml2::xml_children()
 
   # Initialise lastConf
   lastTerm <- lastConfig <- ''
   levels <- 0
+
+  # Initialise data set
+  totalData <- data.frame(stringsAsFactors = FALSE)
 
   # Loop over all the table rows
   for (i in 1:(allRows %>% length)) {
@@ -50,39 +87,57 @@ parse_response <- function(content) {
       elementContent <- rowContent %>%
         xml2::xml_text(trim = T)
 
-      if ('Limit' %in% elementContent) ionLimit <- T
+      # Have we hit the ionization limit yet?
+      ionLimit <- if ('Limit' %in% elementContent) TRUE else FALSE
 
-      # Find out which are just white space
-      filterElements <- sapply(
-        X = elementContent,
-        FUN = function(x) x %>% nchar %>% `>`(0)
-      ) %>%
-        as.logical
+      if (!ionLimit) {
+        # Find out which are just white space
+        #filterElements <- sapply(
+        #  X = elementContent,
+        #  FUN = function(x) x %>% nchar %>% `>`(0)
+        #) %>%
+        #  as.logical
 
-      # Store what `could` be a configuration
-      currentConfig <- elementContent[1]
-      currentTerm <- elementContent[2]
+        # Store what `could` be a configuration
+        currentConfig <- elementContent[1]
+        currentTerm <- elementContent[2]
 
-      # Will need to search for s,p,d,f etc to pad a vector
-      confExists <- currentConfig %>%
-        grepl(pattern = '[[:alpha:]]')
+        # Will need to search for s,p,d,f etc to pad a vector
+        confExists <- currentConfig %>%
+          grepl(pattern = '[[:alpha:]]')
 
-      # Reassign last config / current config
-      if (currentConfig == '') {
-        currentConfig <- lastConfig
-        currentTerm <- lastTerm
+        # Reassign last config / current config
+        if (currentConfig == '') {
+          currentConfig <- lastConfig
+          currentTerm <- lastTerm
+        } else {
+          lastConfig <- currentConfig
+          lastTerm <- currentTerm
+        }
+
+        #elementContent %<>% `[`(filterElements)
+        #attrNames %>% `[`(filterElements)
+
+        if (!confExists) {
+          elementContent[1] <- currentConfig
+          elementContent[2] <- currentTerm
+        }
+
+        singleRow <- c(levels, elementContent) %>%
+          as.data.frame %>%
+          t
+
+        # Bind up the individual rows
+        totalData %<>% rbind(singleRow)
       } else {
-        lastConfig <- currentConfig
-        lastTerm <- currentTerm
+        ionInfo <- elementContent
       }
-
-      elementContent %<>% `[`(filterElements)
-      attrNames %>% `[`(filterElements)
-
-      if (!confExists) elementContent <- c(currentConfig, currentTerm, elementContent)
-
-      singleRow <- c(levels, elementContent)
-      print(c(levels, elementContent))
     }
   }
+
+  # After looping through data, store everything
+  results <- list(
+    data = totalData,
+    ion = ionInfo
+  )
 }
