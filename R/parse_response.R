@@ -135,6 +135,9 @@ parse_response <- function(content) {
     }
   }
 
+  # Name the column headers
+  names(totalData) <- dHeaders
+
   # After looping through data, store everything
   results <- list(
     data = totalData,
