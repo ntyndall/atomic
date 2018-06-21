@@ -5,6 +5,9 @@ require(atomic, quietly = T, warn.conflicts = F)
 require(magrittr, quietly = T, warn.conflicts = F)
 require(crayon, quietly = T, warn.conflicts = F)
 
+# Header text
+cat(crayon::blue('\n Running script, results are saved in `/energylevels/` \n\n'))
+
 # Create the option help list
 optionList <- atomic::cl_arguments()
 
@@ -21,13 +24,21 @@ INPUT <- args %>%
 namedVariables <- INPUT %>%
   names
 
+cat(crayon::blue(' -{ Checking command input \n'))
+
 # Check for `element`
 eExists <- ifelse(
   test = "element" %in% namedVariables,
   yes = T,
   no = F
 )
-if (!eExists) stop(crayon::red("Must supply -e flag"))
+
+if (!eExists) {
+  stop(crayon::red("Must supply -e flag"))
+} else {
+  cat(crayon::green("    ## Found -e flag :", INPUT$element, "\n"))
+  INPUT$element %<>% atomic::parse_series()
+}
 
 # Check for `overwrite`
 oExists <- ifelse(
@@ -38,9 +49,10 @@ oExists <- ifelse(
 
 if (!oExists) {
   INPUT$overwrite <- FALSE
-  cat(crayon::yellow(" ## -o not provided, defaulting to FALSE \n"))
+  cat(crayon::yellow("    ## -o not provided, defaulting to FALSE \n"))
 } else {
-  INPUT$overwrite %<>% atomic::parse_overwrite()
+  cat(crayon::green("    ## Found -o flag :", INPUT$overwrite, "\n"))
+  INPUT$overwrite %<>% tolower %>% atomic::parse_overwrite()
 }
 
 # Check for `conversion`
@@ -52,13 +64,19 @@ cExists <- ifelse(
 
 if (!cExists) {
   INPUT$conversion <- 'ev'
-  cat(crayon::yellow(" ## -c not provided, defaulting to `ev` \n"))
+  cat(crayon::yellow("    ## -c not provided, defaulting to `ev` \n"))
 } else {
-  INPUT$conversion %<>% atomic::parse_conversion()
+  cat(crayon::green("    ## Found -c flag :", INPUT$conversion, "\n"))
+  INPUT$conversion %<>% tolower %>% atomic::parse_conversion()
 }
 
+cat(crayon::blue("  }- \n\n"))
+
 # Call main here
+cat(crayon::blue(" -{ Analysing data \n"))
 INPUT %>% atomic::main()
+cat(crayon::blue("  }- \n\n"))
 
 # End of the script
-cat(crayon::green(' ## Script complete \n'))
+cat("    ")
+cat(crayon::blue("-{ Script complete }-\n"))

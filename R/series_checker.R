@@ -1,4 +1,4 @@
-#' @title Get data
+#' @title Parse Series
 #'
 #' @description A function that sends a post query to NIST to
 #'  retrieve the HTTP response containing the level information
@@ -19,7 +19,7 @@
 #' @export
 
 
-series_checker <- function(series) {
+parse_series <- function(series) {
 
   # Period table
   PT <- atomic::periodic.table

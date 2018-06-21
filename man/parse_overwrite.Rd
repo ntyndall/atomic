@@ -4,5 +4,15 @@
 \alias{parse_overwrite}
 \title{Parse Overwrite}
 \usage{
-parse_overwrite(val)
+parse_overwrite(val, allowedVals = c("true", "false", "t", "f"))
+}
+\arguments{
+\item{val}{A character string defining the value of the \code{overwrite}
+option.}
+
+\item{allowedVals}{A character vector of strings that \code{val} must take.}
+}
+\description{
+A function that takes a value and checks that is
+ of the form of the allowed values.
 }

@@ -4,5 +4,15 @@
 \alias{parse_conversion}
 \title{Parse Conversion}
 \usage{
-parse_conversion(val)
+parse_conversion(val, allowedVals = c("icm", "ev", "ryd"))
+}
+\arguments{
+\item{val}{A character string defining the value of the \code{conversion}
+option.}
+
+\item{allowedVals}{A character vector of strings that \code{val} must take.}
+}
+\description{
+A function that takes a value and checks that is
+ of the form of the allowed values.
 }

@@ -4,7 +4,16 @@
 \alias{main}
 \title{Main}
 \usage{
-main()
+main(INPUT)
+}
+\arguments{
+\item{INPUT}{A named list contaning the input flags from
+running the script, INPUT can contain the following
+  \itemize{
+    \item{\code{element} : An element to query for e.g. fe ii}
+    \item{\code{conversion} : One of ev / ryd / icm}
+    \item{\code{overwrite} : TRUE or FALSE}
+  }}
 }
 \description{
 A function that handles all the components of

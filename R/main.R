@@ -19,21 +19,16 @@
 
 main <- function(INPUT) {
 
-  # Make sure the series is allowed
-  cat(crayon::green(" ## Checking element exists \n"))
-  INPUT$element %<>%
-    atomic::series_checker()
-
   # Supply an element series to get the page content
-  cat(crayon::green(" ## Getting content \n"))
+  cat(crayon::green("    ## Sending query to NIST \n"))
   content <- INPUT$element %>%
     atomic::nist_query()
 
   # Parse the response and return a data frame of information
-  cat(crayon::green(" ## Parsing content \n"))
+  cat(crayon::green("    ## Parsing content from NIST \n\n"))
   dataInfo <- content %>%
     atomic::parse_response()
-  cat('\n')
+  cat('\n\n')
 
   # Make sure the directory exists
   dirName <- getwd() %>%
@@ -58,7 +53,7 @@ main <- function(INPUT) {
       fName %>% file.remove
       TRUE
     } else {
-      cat(crayon::yellow(" ## File already exists, run again with -o true to overwrite this file. \n"))
+      cat(crayon::yellow("    ## File already exists, run again with -o true to overwrite this file. \n"))
       FALSE
     }
   }
@@ -69,5 +64,6 @@ main <- function(INPUT) {
       file = fName,
       row.names = FALSE
     )
+    cat(crayon::green("    ## File written successfully. \n"))
   }
 }
