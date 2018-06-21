@@ -20,7 +20,7 @@ parse_response <- function(content) {
     xml2::xml_children()
 
   # Get main header names
-  tableHeaders %<>%
+  textHeaders <- tableHeaders %>%
     xml2::xml_text() %>%
     strsplit(split = '[(]') %>%
     purrr::map(1) %>%
@@ -39,7 +39,7 @@ parse_response <- function(content) {
     sapply(
       X = 1:(spanning %>% length),
       FUN = function(x) {
-        if (spanning[x] == 1) tableHeaders[x] else tableHeaders[x] %>% paste0('-', 1:spanning[x])
+        if (spanning[x] == 1) textHeaders[x] else textHeaders[x] %>% paste0('-', 1:spanning[x])
       }
     ) %>%
       purrr::flatten_chr()
@@ -59,8 +59,21 @@ parse_response <- function(content) {
   # Initialise data set
   totalData <- data.frame(stringsAsFactors = FALSE)
 
+  # Set up progress bar
+  pb <- utils::txtProgressBar(
+    min = 0,
+    max = allRows %>% length,
+    style = 3
+  )
+
   # Loop over all the table rows
   for (i in 1:(allRows %>% length)) {
+
+    # Iterate progress bar
+    pb %>% utils::setTxtProgressBar(
+      value = i
+    )
+
     # Get the content of each row
     rowContent <- allRows[i] %>%
       xml2::xml_children()
