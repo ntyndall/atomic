@@ -24,9 +24,9 @@ series_checker <- function(series) {
   # Period table
   PT <- atomic::periodic.table
 
-  # Split by space first
+  # Split by underscore first
   splitSeries <- series %>%
-    strsplit(split = '[[:space:]]') %>%
+    strsplit(split = '_') %>%
     purrr::flatten_chr()
 
   # Make sure it has all required details

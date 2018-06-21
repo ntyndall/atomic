@@ -13,12 +13,12 @@ Rscript -e "install.packages('devtools'); library(devtools); devtools::install_g
 ## Collecting energy levels from NIST
 To get well-prepared data from NIST in a human readable format, run the following from the root package;
 ```sh
-Rscript demo/nist.R -e fe ii
+Rscript demo/nist.R -e fe_ii
 ```
 then the results are saved to `energylevels/fe_ii.csv`.
 
 This is the bare minimum to get going, however there are a few other useful commands;
-  - `-e` (element) : A character string, space separated element to query for, **must** always be supplied
+  - `-e` (element) : A character string, underscore separated element to query for, **must** always be supplied
     - Elements can be supplied as `fe` / `iron` / `IrOn` (case-insensitive)
     - Series can be supplied as `0` / `2` / `3+` / `ii` / `vi` / `li-like` (case-insensitive also)
   - `-o` (overwrite) : A boolean `true` or `false` which is default to `false` and allows overwriting files.
