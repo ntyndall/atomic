@@ -11,7 +11,7 @@ nist_query(series)
 which is of the form \code{{Element} {Series}}, e.g. Co ii.}
 }
 \description{
-A function that sends a post query to NIST to
+A function that sends a post query to NIST to 
  retrieve the HTTP response containing the level information
  in the form of a table, nested in an XML nodeset.
 }
