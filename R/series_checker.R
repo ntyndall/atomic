@@ -50,9 +50,19 @@ series_checker <- function(series) {
       `%%`(PT %>% nrow)
     elementDetails <- PT[index, ]
   } else {
-    stop("Element provided by -e not found")
+    stop(" ## Element provided by -e not found.")
   }
 
   # Now check the series required
-  # ...
+  splitSeries$series %<>% atomic::check_series_num(PT = PT)
+
+  # Make sure it doesn't exceed what is allowed, else convert to roman numeral
+  if (splitSeries$series >= elementDetails$atomicNumber) {
+    stop(" ## This series isn't permitted (try something lower).")
+  } else {
+    splitSeries$series %<>% `+`(1) %>% as.roman
+  }
+
+  # Finally, return the series as a list
+  return(paste0(splitSeries$name, " ", splitSeries$series %>% tolower))
 }
