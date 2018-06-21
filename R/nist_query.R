@@ -1,6 +1,6 @@
 #' @title Get data
 #'
-#' @description A function that sends a post query to NIST to 
+#' @description A function that sends a post query to NIST to
 #'  retrieve the HTTP response containing the level information
 #'  in the form of a table, nested in an XML nodeset.
 #'
@@ -10,7 +10,7 @@
 #' @export
 
 
-nist_query <- function(series) {
+nist_query <- function(series, INPUT) {
 
   # Send POST request to NIST, all list information required.
   response <- httr::POST(
@@ -20,7 +20,7 @@ nist_query <- function(series) {
         encodedlist = 'XXT2',
         spectrum = series,
         submit = 'Retrieve Data',
-        units = '0',
+        units = INPUT$conversion %>% as.character,
         format = '0',
         output = '0',
         page_size = '15',
@@ -39,5 +39,5 @@ nist_query <- function(series) {
   )
 
   # Return char response
-  return(rawToChar(response$content)) 
+  return(rawToChar(response$content))
 }

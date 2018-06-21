@@ -22,7 +22,9 @@ main <- function(INPUT) {
   # Supply an element series to get the page content
   cat(crayon::green("    ## Sending query to NIST \n"))
   content <- INPUT$element %>%
-    atomic::nist_query()
+    atomic::nist_query(
+      INPUT = INPUT
+    )
 
   # Parse the response and return a data frame of information
   cat(crayon::green("    ## Parsing content from NIST \n\n"))
