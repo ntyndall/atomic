@@ -13,5 +13,8 @@ Imports:
   magrittr,
   httr,
   xml2,
-  testthat
+  testthat,
+  R.oo,
+  R.utils,
+  crayon
 RoxygenNote: 6.0.1

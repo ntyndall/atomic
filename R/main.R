@@ -12,6 +12,8 @@
 #'      \item{\code{overwrite} : TRUE or FALSE}
 #'    }
 #'
+#' @importFrom magrittr %>% %<>%
+#'
 #' @export
 
 
