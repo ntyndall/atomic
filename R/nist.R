@@ -1,4 +1,4 @@
-#' @title Main
+#' @title NIST
 #'
 #' @description A function that handles all the components of
 #'  querying for data based on the input provided. Files and
@@ -17,7 +17,11 @@
 #' @export
 
 
-main <- function(INPUT) {
+nist <- function(INPUT) {
+
+  # Make sure input is in correct format
+  INPUT %<>%
+    atomic::check_input()
 
   # Supply an element series to get the page content
   cat(crayon::green("    ## Sending query to NIST \n"))

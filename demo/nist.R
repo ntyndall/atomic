@@ -20,7 +20,5 @@ INPUT <- args %>%
     optionList = optionList
   )
 
-# Check input and call main here
-INPUT %>%
-  atomic::check_input() %>%
-  atomic::main()
+# Call main function here
+INPUT %>% atomic::nist()
