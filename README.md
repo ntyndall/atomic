@@ -7,15 +7,16 @@ devtools::install_github('ntyndall/atomic')
 ```
 or from the command line,
 ```sh
-Rscript -e "install.packages('devtools'); library(devtools); devtools::install_github('ntyndall/atomic')"
+Rscript -e "install.packages('devtools', repos = 'https://cloud.r-project.org/'); library(devtools); devtools::install_github('ntyndall/atomic')"
 ```
 
-## Collecting energy levels from NIST
+## Usage - Collecting energy levels from NIST 
+#### Method 1
 To get well-prepared data from NIST in a human readable format, run the following from the root package;
 ```sh
 Rscript demo/nist.R -e fe_ii
 ```
-then the results are saved to `energylevels/fe_ii.csv`.
+then the results are saved to `energylevels/Fe_ii.csv`.
 
 This is the bare minimum to get going, however there are a few other useful commands;
   - `-e` (element) : A character string, underscore separated element to query for, **must** always be supplied
@@ -28,4 +29,11 @@ If in doubt, always refer to
 ```sh
 Rscript demo/nist.R --help
 ```
-for a full list of available options. If something goes wrong however, the standard output should be verbose enough to figure out what went wrong.
+for a full list of available options. If something goes wrong however, the standard output should be verbose enough to figure out what the issue is.
+
+#### Method 2
+If you do not want to clone the repo, you can use an inbuilt function from the package to supply a list of variables. Using the example from Method 1, try running from any directory;
+```bash
+Rscript -e "library(atomic); atomic::nist(list(element = 'fe_ii', overwrite = TRUE))
+```
+You can supply the same, named arguments as above in Method 1, and this will place all the results into `energylevels/Fe_ii.csv` also.
