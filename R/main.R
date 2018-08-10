@@ -68,4 +68,7 @@ main <- function(INPUT) {
     )
     cat(crayon::green("    ## File written successfully. \n"))
   }
+
+  # End of the script
+  cat(crayon::blue("  }- \n\n    -{ Script complete }-\n"))
 }
