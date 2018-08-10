@@ -52,11 +52,26 @@ check_input <- function(INPUT) {
   )
 
   if (!cExists) {
-    INPUT$conversion <- 'ev'
+    INPUT$conversion <- 1
     cat(crayon::yellow("    ## -c not provided, defaulting to `ev` \n"))
   } else {
     cat(crayon::green("    ## Found -c flag :", INPUT$conversion, "\n"))
     INPUT$conversion %<>% tolower %>% atomic::parse_conversion()
+  }
+
+  # Check for `ls`
+  lsExists <- ifelse(
+    test = "ls" %in% namedVariables,
+    yes = T,
+    no = F
+  )
+
+  if (!lsExists) {
+    INPUT$ls <- FALSE
+    cat(crayon::yellow("    ## -l not provided, defaulting to `FALSE` \n"))
+  } else {
+    cat(crayon::green("    ## Found -l flag :", INPUT$ls, "\n"))
+    INPUT$ls %<>% tolower %>% atomic::parse_ls()
   }
 
   cat(crayon::blue("  }- \n\n"))
