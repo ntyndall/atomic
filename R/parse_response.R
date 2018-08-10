@@ -33,17 +33,17 @@ parse_response <- function(content) {
     purrr::map(function(x) if (x %>% is.null) 1 else x %>% as.integer) %>%
     as.integer
 
+  # Check spanning headers first
+  spHeaders <- lapply(
+    X = 1:(spanning %>% length),
+    FUN = function(x) {
+      if (spanning[x] == 1) textHeaders[x] else textHeaders[x] %>% paste0('-', 1:spanning[x])
+    }
+  ) %>%
+    purrr::flatten_chr()
+
   # Create data frame headers
-  dHeaders <- c(
-    'Index',
-    sapply(
-      X = 1:(spanning %>% length),
-      FUN = function(x) {
-        if (spanning[x] == 1) textHeaders[x] else textHeaders[x] %>% paste0('-', 1:spanning[x])
-      }
-    ) %>%
-      purrr::flatten_chr()
-  )
+  dHeaders <- c("Index", spHeaders)
 
   # Get the actual row data
   tableContent <- tBodyContent %>% `[`(2)
@@ -65,6 +65,12 @@ parse_response <- function(content) {
     max = allRows %>% length,
     style = 3
   )
+
+  # Get the level header index (to remove special chars later)
+  lHeadInd <- dHeaders %>%
+    tolower %>%
+    `==`("level") %>%
+    which
 
   # Loop over all the table rows
   for (i in 1:(allRows %>% length)) {
@@ -104,6 +110,14 @@ parse_response <- function(content) {
       ionLimit <- if ('Limit' %in% elementContent) TRUE else FALSE
 
       if (!ionLimit) {
+
+        # Remove any square brackets if they exist
+        elementContent[lHeadInd - 1] %<>%
+          gsub(
+            pattern = "[][]",
+            replacement = ""
+          )
+
         # Find out which are just white space
         #filterElements <- sapply(
         #  X = elementContent,
