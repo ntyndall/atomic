@@ -21,6 +21,29 @@ parse_overwrite <- function(val, allowedVals = c("true", "false", "t", "f")) {
   )
 }
 
+#' @title Parse LS
+#'
+#' @description A function that takes a value and checks that is
+#'  of the form of the allowed values.
+#'
+#' @param val A character string defining the value of the \code{overwrite}
+#'  option.
+#' @param allowedVals A character vector of strings that \code{val} must take.
+#'
+#' @export
+
+
+parse_ls <- function(val, allowedVals = c("true", "false", "t", "f")) {
+  return(
+    if (val %in% allowedVals) {
+      val %>% toupper %>% as.logical
+    } else {
+      cat(crayon::yellow("    ## -l must be one of true / false (defaulting to false) \n"))
+      FALSE
+    }
+  )
+}
+
 #' @title Parse Conversion
 #'
 #' @description A function that takes a value and checks that is
