@@ -66,10 +66,16 @@ parse_response <- function(content) {
     style = 3
   )
 
-  # Get the level header index (to remove special chars later)
+  # Get the Level header index (to remove special chars later)
   lHeadInd <- dHeaders %>%
     tolower %>%
     `==`("level") %>%
+    which
+
+  # Get the Term header index (to adjust parity)
+  tHeadInd <- dHeaders %>%
+    tolower %>%
+    `==`("term") %>%
     which
 
   # Loop over all the table rows
@@ -117,6 +123,23 @@ parse_response <- function(content) {
             pattern = "[][]",
             replacement = ""
           )
+
+        # Replace `°` with actual parity of `o`/`e`
+        splitForParity <- elementContent[tHeadInd - 1] %>%
+          strsplit(split = '') %>%
+          purrr::flatten_chr()
+
+        # Get last element
+        splitForParity %<>%
+          `[`(splitForParity %>% length) %>%
+          `==`('°')
+
+        # Relabel parity
+        myParity <- if (splitForParity) "o" else "e"
+
+
+        # Somehow add to the vector??
+
 
         # Find out which are just white space
         #filterElements <- sapply(
