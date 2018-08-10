@@ -6,8 +6,7 @@
 #' @export
 
 
-
-check_input <- function() {
+check_input <- function(INPUT) {
 
   # Default values in the input list
   namedVariables <- INPUT %>%
