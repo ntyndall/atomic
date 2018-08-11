@@ -66,18 +66,6 @@ parse_response <- function(content) {
     style = 3
   )
 
-  # Get the Level header index (to remove special chars later)
-  lHeadInd <- dHeaders %>%
-    tolower %>%
-    `==`("level") %>%
-    which
-
-  # Get the Term header index (to adjust parity)
-  tHeadInd <- dHeaders %>%
-    tolower %>%
-    `==`("term") %>%
-    which
-
   # Loop over all the table rows
   for (i in 1:(allRows %>% length)) {
 
@@ -117,37 +105,6 @@ parse_response <- function(content) {
 
       if (!ionLimit) {
 
-        # Remove any square brackets if they exist
-        elementContent[lHeadInd - 1] %<>%
-          gsub(
-            pattern = "[][]",
-            replacement = ""
-          )
-
-        # Replace `°` with actual parity of `o`/`e`
-        splitForParity <- elementContent[tHeadInd - 1] %>%
-          strsplit(split = '') %>%
-          purrr::flatten_chr()
-
-        # Get last element
-        splitForParity %<>%
-          `[`(splitForParity %>% length) %>%
-          `==`('°')
-
-        # Relabel parity
-        myParity <- if (splitForParity) "o" else "e"
-
-
-        # Somehow add to the vector??
-
-
-        # Find out which are just white space
-        #filterElements <- sapply(
-        #  X = elementContent,
-        #  FUN = function(x) x %>% nchar %>% `>`(0)
-        #) %>%
-        #  as.logical
-
         # Store what `could` be a configuration
         currentConfig <- elementContent[1]
         currentTerm <- elementContent[2]
@@ -164,9 +121,6 @@ parse_response <- function(content) {
           lastConfig <- currentConfig
           lastTerm <- currentTerm
         }
-
-        #elementContent %<>% `[`(filterElements)
-        #attrNames %>% `[`(filterElements)
 
         if (!confExists) {
           elementContent[1] <- currentConfig
@@ -187,6 +141,33 @@ parse_response <- function(content) {
 
   # Name the column headers
   names(totalData) <- dHeaders
+
+  # Determine partity
+  parities <- totalData$Term %>%
+    as.character %>%
+    strsplit(split = '') %>%
+    purrr::map(
+      .f = function(x) {
+        if (x %>% `[`(x %>% length) %>% `==`("°")) "o" else "e"
+      }
+    ) %>%
+    purrr::flatten_chr()
+
+  # Add parity into data frame
+  totalData %<>% tibble::add_column(Parity = parities, .after = "Term")
+
+  # Replace all odd parities
+  totalData$Term %<>% gsub(
+    pattern = "[°]",
+    replacement = ""
+  )
+
+  # Remove square brackets from term energy
+  totalData$Level %<>%
+    gsub(
+      pattern = "[][]",
+      replacement = ""
+    )
 
   # After looping through data, store everything
   results <- list(
