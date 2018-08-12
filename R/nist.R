@@ -44,7 +44,7 @@ nist <- function(INPUT) {
   # The file name
   fName <- INPUT$element %>%
     gsub(pattern = ' ', replacement = '_') %>%
-    paste0('.csv')
+    paste0(if (INPUT$ls) "-ls.csv" else "-fs.csv")
 
   # Complete the full path
   fName <- dirName %>% paste0('/', fName)
