@@ -33,6 +33,11 @@ cl_arguments <- function() {
       o = c("-c", "--conversion"),
       h = 'How to save the energy levels in the output (default to ev) e.g. -c ryd',
       d = 'conversion'
+    ),
+    create_option(
+      o = c("-l", "--ls"),
+      h = 'Return results in LS coupling (default to false) e.g. -l true',
+      d = 'ls'
     )
   )
 
