@@ -105,25 +105,22 @@ parse_series <- function(series) {
   splitSeries %<>% as.list
   names(splitSeries) <- c("name", "series")
 
-  # All possible element combinations
-  allElements <- c(PT$element %>% as.character, PT$symbol %>% as.character)
-
   # Uppercase first letter in the series
   splitSeries$name %<>% stringr::str_to_title()
 
-  # Check if either format exists + return back the symbol
-  if (splitSeries$name %in% allElements) {
-    index <- splitSeries$name %>%
-      `==`(allElements) %>%
-      which %>%
-      `%%`(PT %>% nrow)
-    elementDetails <- PT[index, ]
-  } else {
-    stop(" ## Element provided by -e not found.")
-  }
+  # Check if element is in PT
+  elementDetails <- splitSeries$name %>%
+    atomic::element_details(PT = PT)
+
+  # Make sure name is now the element symbol
+  splitSeries$name <- elementDetails$symbol %>%
+    as.character
 
   # Now check the series required
-  splitSeries$series %<>% atomic::check_series_num(PT = PT)
+  splitSeries$series %<>% atomic::check_series_num(
+    current = elementDetails$atomicNumber,
+    PT = PT
+  )
 
   # Make sure it doesn't exceed what is allowed, else convert to roman numeral
   if (splitSeries$series >= elementDetails$atomicNumber) {
