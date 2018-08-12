@@ -4,7 +4,7 @@
 \alias{check_series_num}
 \title{Check Series Number}
 \usage{
-check_series_num(num, PT)
+check_series_num(num, current, PT)
 }
 \arguments{
 \item{num}{A character vector containing the series details.}
